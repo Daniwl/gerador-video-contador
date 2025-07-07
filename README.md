@@ -1,4 +1,4 @@
-# 💰 Gerador de Vídeo Contador
+# 💰 Gerador de Vídeo Contador DJES
 
 Gera vídeos animados com contador de dinheiro em reais (R$), com aceleração e desaceleração entre marcos, além de pausas configuráveis. Ideal para conteúdos de metas, apresentações, redes sociais, dashboards e mais.
 
