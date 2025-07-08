@@ -1,150 +1,91 @@
-# Gerador de Video Contador / Counter Video Generator
+# Gerador de Vídeo Contador 🎞️
 
-Sistema em Python para gerar vídeos que exibem contadores numéricos com animações e efeitos visuais. Ideal para criar vídeos de metas, arrecadação ou contagens regressivas/positivas.
+Este projeto cria vídeos animados que contam valores numéricos até marcos definidos, com animações suaves e efeitos visuais no final.
 
----
+## 📦 Requisitos
 
-## 🌐 Idiomas
-
-* [Leia em Português](#uso-em-português)
-* [Read in English](#usage-in-english)
-
----
-
-## Uso em Português
-
-### Instalação
-
-1. Certifique-se de ter o Python 3.9 ou superior instalado.
-
-2. Instale as dependências obrigatórias:
+* Python 3.9+
+* As bibliotecas abaixo (instale com o comando abaixo):
 
 ```bash
 pip install moviepy pillow numpy
 ```
 
-### Execução
+## 🚀 Como Usar
 
-1. Crie o arquivo `config_local.py` com as configurações desejadas (veja abaixo um exemplo).
-2. Execute o script principal:
+1. Clone o repositório:
 
 ```bash
-python vContador.py
+git clone https://github.com/seu-usuario/gerador-video-contador.git
+cd gerador-video-contador
 ```
 
-### Exemplo de `config_local.py`
+2. Crie um arquivo chamado `config_local.py` na raiz, com as configurações desejadas (veja exemplo abaixo).
+
+3. Execute o script principal:
+
+```bash
+python nome_do_arquivo.py
+```
+
+4. O vídeo será gerado conforme suas configurações no arquivo `config_local.py`.
+
+## 🛠️ Exemplo de `config_local.py`
 
 ```python
 CONFIG = {
     "largura": 1920,
     "altura": 1080,
-    "fps": 30,
-    "cor_fundo": (30, 30, 30),
+    "fps": 24,
+    "cor_fundo": (255, 183, 77),
     "cor_texto": (255, 255, 255),
     "cor_contorno": (0, 0, 0),
-    "espessura_contorno": 3,
+    "espessura_contorno": 2,
     "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
-    "tamanho_fonte": 180,
+    "tamanho_fonte": 200,
     "tempo_animacao": 3.0,
     "tempo_pausa": 1.5,
-    "tempo_final_extra": 5.0,
-    "valores_marcos": [100, 500, 1000],
+    "tempo_final_extra": 5,
+    "valores_marcos": [150, 259, 585, 752, 1000],
     "efeito_piscar_final": True,
     "cores_piscar": [(255, 255, 255), (255, 215, 0)],
-    "piscar_por_segundo": 5,
-    "arquivo_saida": "meu_video.mp4",
+    "piscar_por_segundo": 6,
+    "arquivo_saida": "video_final.mp4",
     "texto_unidade_monetaria": "R$"
 }
 ```
 
-> ✅ **Nota:** Se algum campo for omitido, o sistema usará os valores padrão.
+> ⚠️ Este arquivo **não será versionado**, pois está no `.gitignore`. Isso permite personalizações locais sem afetar o projeto principal.
 
-### Campos do CONFIG explicados
+## 📊 Descrição dos Campos do `CONFIG`
 
-| Campo                     | Descrição                                    |
-| ------------------------- | -------------------------------------------- |
-| `largura`, `altura`       | Dimensões do vídeo                           |
-| `fps`                     | Frames por segundo                           |
-| `cor_fundo`               | Cor de fundo do vídeo (RGB)                  |
-| `cor_texto`               | Cor principal do texto                       |
-| `cor_contorno`            | Cor da borda do texto                        |
-| `espessura_contorno`      | Espessura da borda do texto                  |
-| `caminho_fonte`           | Caminho da fonte TTF                         |
-| `tamanho_fonte`           | Tamanho da fonte                             |
-| `tempo_animacao`          | Tempo de contagem entre marcos               |
-| `tempo_pausa`             | Pausa após cada marco                        |
-| `tempo_final_extra`       | Tempo extra ao final (para efeito de piscar) |
-| `valores_marcos`          | Lista dos valores a serem contados           |
-| `efeito_piscar_final`     | Se verdadeiro, o número final piscará        |
-| `cores_piscar`            | Lista de cores para o efeito de piscar       |
-| `piscar_por_segundo`      | Quantas vezes por segundo o número pisca     |
-| `arquivo_saida`           | Nome do arquivo MP4 gerado                   |
-| `texto_unidade_monetaria` | Prefixo como "R\$" ou "\$"                   |
+| Campo                     | Tipo          | Unidade             | Descrição                                            |
+| ------------------------- | ------------- | ------------------- | ---------------------------------------------------- |
+| `largura`                 | `int`         | pixels              | Largura do vídeo                                     |
+| `altura`                  | `int`         | pixels              | Altura do vídeo                                      |
+| `fps`                     | `int`         | quadros por segundo | Taxa de quadros por segundo (frames per second)      |
+| `cor_fundo`               | `tuple`       | RGB                 | Cor de fundo do vídeo                                |
+| `cor_texto`               | `tuple`       | RGB                 | Cor principal do texto                               |
+| `cor_contorno`            | `tuple`       | RGB                 | Cor do contorno do texto                             |
+| `espessura_contorno`      | `int`         | pixels              | Espessura do contorno do texto                       |
+| `caminho_fonte`           | `str`         | caminho do sistema  | Caminho absoluto da fonte `.ttf`                     |
+| `tamanho_fonte`           | `int`         | pontos              | Tamanho da fonte                                     |
+| `tempo_animacao`          | `float`       | segundos            | Tempo para animar até o próximo valor                |
+| `tempo_pausa`             | `float`       | segundos            | Pausa entre animações                                |
+| `tempo_final_extra`       | `float`       | segundos            | Tempo extra com efeito de piscar após o último valor |
+| `valores_marcos`          | `list[int]`   | unidade monetária   | Lista com os valores a serem animados                |
+| `efeito_piscar_final`     | `bool`        | -                   | Se verdadeiro, ativa o efeito de piscar no final     |
+| `cores_piscar`            | `list[tuple]` | RGB                 | Lista de cores alternadas no efeito de piscar        |
+| `piscar_por_segundo`      | `int`         | vezes por segundo   | Frequência da troca de cores no efeito de piscar     |
+| `arquivo_saida`           | `str`         | nome do arquivo     | Nome do vídeo final exportado                        |
+| `texto_unidade_monetaria` | `str`         | símbolo             | Prefixo do valor (ex: R\$, US\$, etc)                |
 
-### Evitar subir config\_local.py para o GitHub
+## 🌐 International README
 
-Adicione no `.gitignore`:
-
-```
-config_local.py
-```
+English version is available at [`README.en.md`](README.en.md)
 
 ---
 
-## Usage in English
+## 🧾 Licença
 
-### Installation
-
-1. Make sure Python 3.9 or newer is installed.
-
-2. Install dependencies:
-
-```bash
-pip install moviepy pillow numpy
-```
-
-### Running
-
-1. Create a file `config_local.py` with your preferred settings (see example below).
-2. Run the script:
-
-```bash
-python vContador.py
-```
-
-### Example `config_local.py`
-
-```python
-CONFIG = {
-    "largura": 1920,
-    "altura": 1080,
-    "fps": 30,
-    "cor_fundo": (30, 30, 30),
-    "cor_texto": (255, 255, 255),
-    "cor_contorno": (0, 0, 0),
-    "espessura_contorno": 3,
-    "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
-    "tamanho_fonte": 180,
-    "tempo_animacao": 3.0,
-    "tempo_pausa": 1.5,
-    "tempo_final_extra": 5.0,
-    "valores_marcos": [100, 500, 1000],
-    "efeito_piscar_final": True,
-    "cores_piscar": [(255, 255, 255), (255, 215, 0)],
-    "piscar_por_segundo": 5,
-    "arquivo_saida": "my_video.mp4",
-    "texto_unidade_monetaria": "$"
-}
-```
-
-> ✅ **Note:** If a field is missing, the script will use default values.
-
-### CONFIG Field Descriptions
-
-Same as the table above, just translated.
-
----
-
-## Licença / License
-
-MIT — livre para uso, modificação e distribuição.
+MIT. Livre para uso e modificação.
