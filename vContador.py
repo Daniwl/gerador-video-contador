@@ -2,39 +2,37 @@ import numpy as np
 from moviepy import VideoClip, ColorClip
 from PIL import Image, ImageDraw, ImageFont
 from functools import lru_cache
+import random
+import os
 
-try:
+# Carrega config externo se existir
+if os.path.exists("config_local.py"):
     from config_local import CONFIG
-except ImportError:
-    CONFIG = {}
-
-# ============================
-# 🔧 CONFIGURAÇÕES PADRÃO (usadas se não definidas em config_local.py)
-# ============================
-DEFAULT_CONFIG = {
-    "largura": 1920,
-    "altura": 1080,
-    "fps": 24,
-    "cor_fundo": (255, 183, 77),
-    "cor_texto": (255, 255, 255),
-    "cor_contorno": (0, 0, 0),
-    "espessura_contorno": 2,
-    "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
-    "tamanho_fonte": 200,
-    "tempo_animacao": 3.0,
-    "tempo_pausa": 1.5,
-    "tempo_final_extra": 5,
-    "valores_marcos": [1, 5, 10],
-    "efeito_piscar_final": True,
-    "cores_piscar": [(255, 255, 255), (255, 215, 0)],
-    "piscar_por_segundo": 6,
-    "arquivo_saida": "video_contador_configuravel.mp4",
-    "texto_unidade_monetaria": "R$"
-}
-
-# Substitui valores ausentes no CONFIG pelos padrões
-for chave, valor in DEFAULT_CONFIG.items():
-    CONFIG.setdefault(chave, valor)
+else:
+    CONFIG = {
+        "largura": 1920,
+        "altura": 1080,
+        "fps": 24,
+        "cor_fundo": (255, 183, 77),
+        "cor_texto": (255, 255, 255),
+        "cor_contorno": (0, 0, 0),
+        "espessura_contorno": 2,
+        "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "tamanho_fonte": 200,
+        "tempo_animacao": 3.0,
+        "tempo_pausa": 1.5,
+        "tempo_final_extra": 5,
+        "valores_marcos": [1, 5, 10],
+        "efeito_piscar_final": True,
+        "cores_piscar": [(255, 255, 255), (255, 215, 0)],
+        "piscar_por_segundo": 6,
+        "arquivo_saida": "video_contador_configuravel.mp4",
+        "texto_unidade_monetaria": "R$",
+        "tempo_animacao_aleatorio": False,
+        "intervalo_tempo_animacao": [2.0, 4.0],
+        "fator_inicio_suave": 1.0,
+        "fator_fim_suave": 1.0,
+    }
 
 FUNDO_BASE = ColorClip(size=(CONFIG["largura"], CONFIG["altura"]),
                        color=CONFIG["cor_fundo"]).get_frame(0)
@@ -63,76 +61,79 @@ def gerar_imagem_texto(texto, cor_texto_dinamica=None):
     draw.text((0, 0), texto, font=fonte, fill=cor_texto)
     return img
 
+# Pré-processa tempos por marco (caso aleatório esteja ativado)
+TEMPOS_ANIMACAO = []
+faixa_padrao = CONFIG["tempo_animacao"] + CONFIG["tempo_pausa"]
+
+for _ in CONFIG["valores_marcos"]:
+    if CONFIG.get("tempo_animacao_aleatorio", False):
+        anim = random.uniform(*CONFIG["intervalo_tempo_animacao"])
+    else:
+        anim = CONFIG["tempo_animacao"]
+    TEMPOS_ANIMACAO.append((anim, CONFIG["tempo_pausa"]))
+
 def calcular_valor(t):
-    anim = CONFIG["tempo_animacao"]
-    pausa = CONFIG["tempo_pausa"]
     valores = CONFIG["valores_marcos"]
-    tempo_extra_final = CONFIG["tempo_final_extra"]
-    faixa_total = anim + pausa
-
-    total_duracao_sem_extra = len(valores) * faixa_total
-    duracao_total = total_duracao_sem_extra + tempo_extra_final
-
+    tempo_extra = CONFIG["tempo_final_extra"]
+    total_duracao_sem_extra = sum(a + p for a, p in TEMPOS_ANIMACAO)
     valor = 0
-    cor_piscar = CONFIG["cor_texto"]
+    cor = CONFIG["cor_texto"]
 
     if CONFIG["efeito_piscar_final"] and t >= total_duracao_sem_extra:
         valor = valores[-1]
         cores = CONFIG["cores_piscar"]
-        indice = int(t * CONFIG["piscar_por_segundo"]) % len(cores)
-        cor_piscar = cores[indice]
+        piscar = int(t * CONFIG["piscar_por_segundo"]) % len(cores)
+        cor = cores[piscar]
     else:
-        for i, alvo in enumerate(valores):
-            t_inicio = i * faixa_total
-            t_fim_anim = t_inicio + anim
-            t_fim_total = t_fim_anim + pausa
+        tempo_acumulado = 0
+        for i, (an, pp) in enumerate(TEMPOS_ANIMACAO):
+            inicio = tempo_acumulado
+            fim_anim = inicio + an
+            fim_total = fim_anim + pp
+            tempo_acumulado = fim_total
 
-            if t_inicio <= t < t_fim_anim:
-                inicio = 0 if i == 0 else valores[i - 1]
-                progresso = (t - t_inicio) / anim
-                fator = 3 * progresso**2 - 2 * progresso**3
-                valor = inicio + (alvo - inicio) * fator
-                break
-            elif t_fim_anim <= t < t_fim_total:
-                valor = alvo
-                break
-            elif t >= t_fim_total:
-                valor = alvo
+            if inicio <= t < fim_anim:
+                v_ini = 0 if i == 0 else valores[i - 1]
+                v_fim = valores[i]
+                progresso = (t - inicio) / an
 
-    texto_formatado = f"{CONFIG['texto_unidade_monetaria']} {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    return texto_formatado, cor_piscar
+                fi = CONFIG.get("fator_inicio_suave", 1.0)
+                ff = CONFIG.get("fator_fim_suave", 1.0)
+                curva = progresso**fi * (1 - (1 - progresso)**ff)
+
+                valor = v_ini + (v_fim - v_ini) * curva
+                break
+            elif fim_anim <= t < fim_total:
+                valor = valores[i]
+                break
+            elif t >= fim_total:
+                valor = valores[i]
+
+    texto = f"{CONFIG['texto_unidade_monetaria']} {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    return texto, cor
 
 def gerar_frame(t):
-    largura = CONFIG["largura"]
-    altura = CONFIG["altura"]
     frame = FUNDO_BASE.copy()
+    texto, cor = calcular_valor(t)
+    img_txt = gerar_imagem_texto(texto, cor)
+    np_img = np.array(img_txt)
 
-    texto, cor_dinamica = calcular_valor(t)
-    imagem_texto = gerar_imagem_texto(texto, tuple(cor_dinamica))
-    img_np = np.array(imagem_texto)
+    x = (CONFIG["largura"] - img_txt.width) // 2
+    y = (CONFIG["altura"] - img_txt.height) // 2
 
-    x = (largura - imagem_texto.width) // 2
-    y = (altura - imagem_texto.height) // 2
-
-    alpha = img_np[..., 3] / 255.0
+    alpha = np_img[..., 3] / 255.0
     for c in range(3):
-        frame[y:y+imagem_texto.height, x:x+imagem_texto.width, c] = (
-            alpha * img_np[..., c] + (1 - alpha) * frame[y:y+imagem_texto.height, x:x+imagem_texto.width, c]
+        frame[y:y+img_txt.height, x:x+img_txt.width, c] = (
+            alpha * np_img[..., c] + (1 - alpha) * frame[y:y+img_txt.height, x:x+img_txt.width, c]
         ).astype(np.uint8)
 
     return frame
 
 def gerar_video():
-    total_marcos = len(CONFIG["valores_marcos"])
-    tempo_base = total_marcos * (CONFIG["tempo_animacao"] + CONFIG["tempo_pausa"])
-    duracao_total = tempo_base + CONFIG["tempo_final_extra"]
-
-    print("🔧 Gerando vídeo com duração:", duracao_total, "segundos...")
-
+    duracao_total = sum(an + pp for an, pp in TEMPOS_ANIMACAO) + CONFIG["tempo_final_extra"]
     video = VideoClip(gerar_frame, duration=duracao_total)
-    video.write_videofile(CONFIG["arquivo_saida"], fps=CONFIG["fps"],
-                          threads=4, preset='ultrafast')
-    print("✅ Vídeo exportado:", CONFIG["arquivo_saida"])
+    video.write_videofile(CONFIG["arquivo_saida"], fps=CONFIG["fps"], threads=4, preset='ultrafast')
+    print(f"✅ Vídeo salvo como: {CONFIG['arquivo_saida']}")
 
 if __name__ == "__main__":
     gerar_video()
