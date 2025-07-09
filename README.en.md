@@ -1,97 +1,122 @@
-# 📊 Counter Video Generator
+# 📊 Video Counter Generator
 
-This project generates animated videos that count numerical values up to defined milestones, with smooth animations and visual effects at the end.
+A Python-based system that generates animated videos counting up to specified milestones, with smooth transitions and optional final effects.
+
+---
+
+## 📁 Project Structure
+
+```
+video_counter_system/
+├── main.py
+├── requirements.txt
+├── config/
+│   ├── config_loader.py
+│   └── default_config.py
+├── src/
+│   ├── animation/
+│   ├── rendering/
+│   └── video/
+└── tests/
+```
+
+---
 
 ## 📦 Requirements
 
 * Python 3.9+
-* Windows (or adjusted fonts for Linux/Mac)
+* Windows (or adjust the font path for Linux/Mac)
 
-### 📅 Install dependencies:
+---
+
+## ⚙️ Installation
 
 ```bash
-pip install moviepy pillow numpy
+pip install -r requirements.txt
 ```
+
+---
 
 ## 🚀 How to Use
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/gerador-video-contador.git
-cd gerador-video-contador
+git clone https://github.com/your-username/video_counter_system.git
+cd video_counter_system
 ```
 
-2. Create a `config_local.py` file with your preferred settings (see example below). If it doesn't exist, the system will use internal default values.
+2. *(Optional)* Create a `config_local.py` file in the root folder to override default settings.
+   If not provided, the defaults from `config/default_config.py` will be used.
 
-3. Run the main script:
+3. Run the generator:
 
 ```bash
 python main.py
 ```
 
-4. The video will be exported using the name and folder specified in `arquivo_saida`.
+4. The video will be exported with the name and path specified in `arquivo_saida`.
+
+---
 
 ## 🔧 Example `config_local.py`
 
 ```python
 CONFIG = {
-    "largura": 1280,                         # Video width (px)
-    "altura": 720,                           # Video height (px)
-    "fps": 30,                               # Frames per second
-
-    "cor_fundo": (0, 0, 0),                 # RGB - Background color
-    "cor_texto": (255, 255, 255),           # RGB - Number color
-    "cor_contorno": (255, 0, 0),            # RGB - Border color
-    "espessura_contorno": 3,               # Border thickness (px)
-
-    "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",  # Font path
-    "tamanho_fonte": 120,                   # Font size (pt)
-
-    "valores_marcos": [100, 250, 400],      # List of values to be displayed
-    "texto_unidade_monetaria": "R$",       # Number prefix
-
-    "tempo_animacao": 3.0,                  # Default time between values (s)
-    "tempo_pausa": 1.0,                     # Pause after each value (s)
-    "tempo_final_extra": 4.0,               # Extra time after final value (s)
-
-    "efeito_piscar_final": True,            # Flash final value?
-    "cores_piscar": [(255,255,255), (255,215,0), (255,0,0)],  # Flash colors
-    "piscar_por_segundo": 6,               # Flash frequency (times/sec)
-
-    "tempo_animacao_aleatorio": False,      # If True, random time per value
-    "intervalo_tempo_animacao": [3.0, 5.0], # Random animation interval (s)
-
-    "fator_suavizacao": 1.0,                # Interpolation smoothing factor (0.2 to 2.0)
-
-    "arquivo_saida": "saida_video.mp4"      # Final video file name
+    "largura": 1280,
+    "altura": 720,
+    "fps": 30,
+    "cor_fundo": (0, 0, 0),
+    "cor_texto": (255, 255, 255),
+    "cor_contorno": (255, 0, 0),
+    "espessura_contorno": 3,
+    "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
+    "tamanho_fonte": 120,
+    "valores_marcos": [100, 250, 400],
+    "texto_unidade_monetaria": "R$",
+    "tempo_animacao": 3.0,
+    "tempo_pausa": 1.0,
+    "tempo_final_extra": 4.0,
+    "efeito_piscar_final": True,
+    "cores_piscar": [(255, 255, 255), (255, 215, 0), (255, 0, 0)],
+    "piscar_por_segundo": 6,
+    "tempo_animacao_aleatorio": False,
+    "intervalo_tempo_animacao": [3.0, 5.0],
+    "fator_inicio_suave": 1.0,
+    "fator_fim_suave": 1.0,
+    "arquivo_saida": "output_video.mp4"
 }
 ```
 
-## 🗒️ CONFIG Field Descriptions
+---
 
-| Field                      | Type          | Unit          | Description                        |
-| -------------------------- | ------------- | ------------- | ---------------------------------- |
-| `largura` / `altura`       | `int`         | px            | Video dimensions                   |
-| `fps`                      | `int`         | frames/second | Frame rate                         |
-| `cor_*`                    | `tuple[int]`  | RGB           | Background, text and border colors |
-| `espessura_contorno`       | `int`         | px            | Text border thickness              |
-| `caminho_fonte`            | `str`         | system path   | Path to .ttf font                  |
-| `tamanho_fonte`            | `int`         | pt            | Font size                          |
-| `valores_marcos`           | `list[int]`   | currency unit | Values to be counted               |
-| `texto_unidade_monetaria`  | `str`         | symbol        | E.g. "R\$", "US\$"                 |
-| `tempo_animacao`           | `float`       | seconds       | Default animation duration         |
-| `tempo_pausa`              | `float`       | seconds       | Pause after each value             |
-| `tempo_final_extra`        | `float`       | seconds       | Time for final effect              |
-| `efeito_piscar_final`      | `bool`        | -             | Enables final effect               |
-| `cores_piscar`             | `list[tuple]` | RGB           | Colors used in flashing            |
-| `piscar_por_segundo`       | `int`         | times/second  | Flashing frequency                 |
-| `tempo_animacao_aleatorio` | `bool`        | -             | Enables time variation             |
-| `intervalo_tempo_animacao` | `list[float]` | seconds       | Range for random durations         |
-| `fator_suavizacao`         | `float`       | no unit       | 0.2 = smoother, 2.0 = faster       |
-| `arquivo_saida`            | `str`         | filename      | Name of exported video             |
+## 🧾 Configuration Fields
 
-## 📁 Suggested `.gitignore`
+| Field                      | Type          | Description                                     |
+| -------------------------- | ------------- | ----------------------------------------------- |
+| `largura`, `altura`        | `int`         | Video resolution in pixels                      |
+| `fps`                      | `int`         | Frames per second                               |
+| `cor_*`                    | `tuple[int]`  | RGB values for background, text, and outline    |
+| `espessura_contorno`       | `int`         | Text outline thickness                          |
+| `caminho_fonte`            | `str`         | Path to `.ttf` font file                        |
+| `tamanho_fonte`            | `int`         | Font size in points                             |
+| `valores_marcos`           | `list[int]`   | Milestone values to animate                     |
+| `texto_unidade_monetaria`  | `str`         | Currency or unit prefix (e.g., `"R$"`, `"US$"`) |
+| `tempo_animacao`           | `float`       | Animation duration per milestone (seconds)      |
+| `tempo_pausa`              | `float`       | Pause duration after each value (seconds)       |
+| `tempo_final_extra`        | `float`       | Extra duration after the last value (seconds)   |
+| `efeito_piscar_final`      | `bool`        | Enable blinking effect at final value           |
+| `cores_piscar`             | `list[tuple]` | RGB colors used for blinking                    |
+| `piscar_por_segundo`       | `int`         | Blinking frequency (times per second)           |
+| `tempo_animacao_aleatorio` | `bool`        | Enable random animation duration per value      |
+| `intervalo_tempo_animacao` | `list[float]` | Range for random duration (seconds)             |
+| `fator_inicio_suave`       | `float`       | Smoothing factor at the start                   |
+| `fator_fim_suave`          | `float`       | Smoothing factor at the end                     |
+| `arquivo_saida`            | `str`         | Output video filename                           |
+
+---
+
+## ✅ Suggested `.gitignore`
 
 ```bash
 config_local.py
@@ -100,11 +125,15 @@ __pycache__/
 *.mp4
 ```
 
-## 🌐 International Versions
+---
 
-* [`README.en.md`](README.en.md): English version
-* [`README.pt.md`](README.pt.md): Portuguese version
+## 🌍 Multilingual Support
+
+| Language | File           |
+| -------- | -------------- |
+| 🇧🇷 PT  | `README.md`    |
+| 🇺🇸 EN  | `README.en.md` |
 
 ---
 
-Made with 💻 by \[Your Name Here] — contributions welcome!
+🛠️ Built with 💻 by \[Daniwl] — contributions are welcome!

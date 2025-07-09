@@ -1,99 +1,122 @@
 # 📊 Gerador de Vídeo Contador
 
-Este projeto gera vídeos animados que contam valores numéricos até marcos definidos, com animações suaves e efeitos visuais ao final.
+Sistema Python para gerar vídeos com contagem animada até valores definidos, com suavização e efeitos visuais no final.
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+video_counter_system/
+├── main.py
+├── requirements.txt
+├── config/
+│   ├── config_loader.py
+│   └── default_config.py
+├── src/
+│   ├── animation/
+│   ├── rendering/
+│   └── video/
+└── tests/
+```
+
+---
 
 ## 📦 Requisitos
 
-* Python 3.9+
-* Windows (ou ajuste de fontes para Linux/Mac)
+* Python 3.9 ou superior
+* Windows (ou ajustar caminho da fonte no Linux/Mac)
 
-### 📅 Instalar dependências:
+---
+
+## ⚙️ Instalação
 
 ```bash
-pip install moviepy pillow numpy
+pip install -r requirements.txt
 ```
+
+---
 
 ## 🚀 Como Usar
 
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/your-username/gerador-video-contador.git
-cd gerador-video-contador
+git clone https://github.com/seu-usuario/video_counter_system.git
+cd video_counter_system
 ```
 
-2. Crie um arquivo `config_local.py` com suas configurações preferidas (veja exemplo abaixo). Se não existir, o sistema usará valores padrão internos.
+2. (Opcional) Crie um arquivo `config_local.py` na raiz com suas configurações personalizadas.
+   Se não existir, serão usados valores padrão (`config/default_config.py`).
 
-3. Execute o script principal:
+3. Execute o sistema:
 
 ```bash
 python main.py
 ```
 
-4. O vídeo será exportado com o nome e pasta definidos em `arquivo_saida`.
+4. O vídeo será exportado conforme o nome e caminho definidos no campo `arquivo_saida`.
+
+---
 
 ## 🔧 Exemplo de `config_local.py`
 
 ```python
 CONFIG = {
-    "largura": 1280,                         # Largura do vídeo (px)
-    "altura": 720,                           # Altura do vídeo (px)
-    "fps": 30,                              # Frames por segundo
-
-    "cor_fundo": (0, 0, 0),                 # RGB - Cor do fundo
-    "cor_texto": (255, 255, 255),           # RGB - Cor dos números
-    "cor_contorno": (255, 0, 0),            # RGB - Cor da borda do texto
-    "espessura_contorno": 3,                # Espessura da borda (px)
-
-    "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",  # Caminho da fonte
-    "tamanho_fonte": 120,                   # Tamanho da fonte (pt)
-
-    "valores_marcos": [100, 250, 400],     # Lista de valores a serem mostrados
-    "texto_unidade_monetaria": "R$",       # Prefixo para os números
-
-    "tempo_animacao": 3.0,                  # Tempo padrão entre valores (s)
-    "tempo_pausa": 1.0,                     # Pausa após cada valor (s)
-    "tempo_final_extra": 4.0,               # Tempo extra após o valor final (s)
-
-    "efeito_piscar_final": True,            # Ativar piscar no valor final?
-    "cores_piscar": [(255,255,255), (255,215,0), (255,0,0)],  # Cores do piscar
-    "piscar_por_segundo": 6,                # Frequência do piscar (vezes/segundo)
-
-    "tempo_animacao_aleatorio": False,      # Tempo aleatório por valor?
-    "intervalo_tempo_animacao": [3.0, 5.0], # Intervalo de tempo aleatório (s)
-
-    "fator_inicio_suave": 1.0,              # Suavidade no início (maior = mais suave)
-    "fator_fim_suave": 1.0,                 # Suavidade no fim (maior = mais suave)
-
-    "arquivo_saida": "saida_video.mp4"      # Nome do arquivo final do vídeo
+    "largura": 1280,
+    "altura": 720,
+    "fps": 30,
+    "cor_fundo": (0, 0, 0),
+    "cor_texto": (255, 255, 255),
+    "cor_contorno": (255, 0, 0),
+    "espessura_contorno": 3,
+    "caminho_fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
+    "tamanho_fonte": 120,
+    "valores_marcos": [100, 250, 400],
+    "texto_unidade_monetaria": "R$",
+    "tempo_animacao": 3.0,
+    "tempo_pausa": 1.0,
+    "tempo_final_extra": 4.0,
+    "efeito_piscar_final": True,
+    "cores_piscar": [(255, 255, 255), (255, 215, 0), (255, 0, 0)],
+    "piscar_por_segundo": 6,
+    "tempo_animacao_aleatorio": False,
+    "intervalo_tempo_animacao": [3.0, 5.0],
+    "fator_inicio_suave": 1.0,
+    "fator_fim_suave": 1.0,
+    "arquivo_saida": "saida_video.mp4"
 }
 ```
 
-## 🗒️ Descrição dos Campos do CONFIG
+---
 
-| Campo                      | Tipo          | Unidade      | Descrição                                |
-| -------------------------- | ------------- | ------------ | ---------------------------------------- |
-| `largura` / `altura`       | `int`         | px           | Dimensões do vídeo                       |
-| `fps`                      | `int`         | quadros/seg  | Frames por segundo                       |
-| `cor_*`                    | `tuple[int]`  | RGB          | Cores do fundo, texto e contorno         |
-| `espessura_contorno`       | `int`         | px           | Espessura da borda do texto              |
-| `caminho_fonte`            | `str`         | caminho      | Caminho para arquivo .ttf                |
-| `tamanho_fonte`            | `int`         | pt           | Tamanho da fonte                         |
-| `valores_marcos`           | `list[int]`   | unidade      | Valores a serem contados                 |
-| `texto_unidade_monetaria`  | `str`         | símbolo      | Ex: "R\$", "US\$"                        |
-| `tempo_animacao`           | `float`       | segundos     | Duração padrão da animação               |
-| `tempo_pausa`              | `float`       | segundos     | Pausa após cada valor                    |
-| `tempo_final_extra`        | `float`       | segundos     | Tempo para efeito final                  |
-| `efeito_piscar_final`      | `bool`        | -            | Ativa efeito de piscar final             |
-| `cores_piscar`             | `list[tuple]` | RGB          | Cores usadas no piscar                   |
-| `piscar_por_segundo`       | `int`         | vezes/seg    | Frequência do piscar                     |
-| `tempo_animacao_aleatorio` | `bool`        | -            | Ativa variação do tempo                  |
-| `intervalo_tempo_animacao` | `list[float]` | segundos     | Intervalo para tempo aleatório           |
-| `fator_inicio_suave`       | `float`       | sem unidade  | Suavidade no início (maior = mais suave) |
-| `fator_fim_suave`          | `float`       | sem unidade  | Suavidade no fim (maior = mais suave)    |
-| `arquivo_saida`            | `str`         | nome arquivo | Nome do vídeo exportado                  |
+## 🧾 Campos de Configuração
 
-## 📁 `.gitignore` sugerido
+| Campo                      | Tipo          | Descrição                             |
+| -------------------------- | ------------- | ------------------------------------- |
+| `largura`, `altura`        | `int`         | Dimensões do vídeo (px)               |
+| `fps`                      | `int`         | Frames por segundo                    |
+| `cor_*`                    | `tuple[int]`  | Cores do fundo, texto, contorno (RGB) |
+| `espessura_contorno`       | `int`         | Espessura da borda do texto           |
+| `caminho_fonte`            | `str`         | Caminho para a fonte `.ttf`           |
+| `tamanho_fonte`            | `int`         | Tamanho da fonte                      |
+| `valores_marcos`           | `list[int]`   | Valores de contagem                   |
+| `texto_unidade_monetaria`  | `str`         | Prefixo monetário                     |
+| `tempo_animacao`           | `float`       | Tempo de transição entre valores (s)  |
+| `tempo_pausa`              | `float`       | Pausa após cada valor (s)             |
+| `tempo_final_extra`        | `float`       | Tempo após o valor final (s)          |
+| `efeito_piscar_final`      | `bool`        | Ativar piscar no final?               |
+| `cores_piscar`             | `list[tuple]` | Cores usadas no efeito final          |
+| `piscar_por_segundo`       | `int`         | Frequência do piscar                  |
+| `tempo_animacao_aleatorio` | `bool`        | Tempos variáveis entre valores        |
+| `intervalo_tempo_animacao` | `list[float]` | Intervalo de tempo aleatório (s)      |
+| `fator_inicio_suave`       | `float`       | Suavidade no início da transição      |
+| `fator_fim_suave`          | `float`       | Suavidade no fim da transição         |
+| `arquivo_saida`            | `str`         | Nome do arquivo final                 |
+
+---
+
+## ✅ `.gitignore` sugerido
 
 ```bash
 config_local.py
@@ -102,11 +125,15 @@ __pycache__/
 *.mp4
 ```
 
-## 🌐 Versões internacionais
+---
 
-* [`README.en.md`](README.en.md): Versão em inglês
-* [`README.pt.md`](README.pt.md): Versão em português
+## 🌍 Internacionalização
+
+| Idioma  | Arquivo                        |
+| ------- | ------------------------------ |
+| 🇧🇷 PT | `README.md`                    |
+| 🇺🇸 EN | [`README.en.md`](README.en.md) |
 
 ---
 
-Feito com 💻 por \[Daniwl] — contribuições são bem-vindas!
+🔧 Feito com dedicação por \[Daniwl] — contribuições e sugestões são bem-vindas!
